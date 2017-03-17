@@ -1,12 +1,12 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.1.21)  28 MAR 2016 23:50
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015) (preloaded format=pdflatex 2016.1.21)  29 MAR 2016 11:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**/Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/slides/gis_app_20
-16_Bhowmik.tex
+**/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/slides/gis_app_2016
+_Bhowmik.tex
 
-(/Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/slides/gis_app_201
-6_Bhowmik.tex
+(/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/slides/gis_app_2016_
+Bhowmik.tex
 LaTeX2e <2015/01/01>
 Babel <3.9l> and hyphenation patterns for 79 languages loaded.
 (/usr/local/texlive/2015/texmf-dist/tex/latex/beamer/beamer.cls (/usr/local/tex
@@ -719,8 +719,8 @@ Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
 (hyperref)                removing `\medskipamount' on input line 99.
 
 
-(/Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/slides/gis_app_201
-6_Bhowmik.aux)
+(/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/slides/gis_app_2016_
+Bhowmik.aux)
 \openout1 = `gis_app_2016_Bhowmik.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 99.
@@ -810,10 +810,10 @@ LaTeX Info: Redefining \ref on input line 99.
 LaTeX Info: Redefining \pageref on input line 99.
 LaTeX Info: Redefining \nameref on input line 99.
 
-(/Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/slides/gis_app_201
-6_Bhowmik.out)
-(/Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/slides/gis_app_201
-6_Bhowmik.out)
+(/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/slides/gis_app_2016_
+Bhowmik.out)
+(/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/slides/gis_app_2016_
+Bhowmik.out)
 \@outlinefile=\write5
 \openout5 = `gis_app_2016_Bhowmik.out'.
 
@@ -896,8 +896,8 @@ Dictionary: translator-theorem-dictionary, Language: English
 )
 LaTeX Info: Redefining \includegraphics on input line 99.
 
-(/Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/slides/gis_app_201
-6_Bhowmik.nav)
+(/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/slides/gis_app_2016_
+Bhowmik.nav)
 
 LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
 (Font)              size <5> substituted on input line 103.
@@ -1108,8 +1108,8 @@ Package pdftex.def Info: Figures/Ques.png used on input line 320.
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 324.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 324.
 
-(/Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/slides/gis_app_201
-6_Bhowmik.aux)
+(/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/slides/gis_app_2016_
+Bhowmik.aux)
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 324.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 324.
 Package rerunfilecheck Info: File `gis_app_2016_Bhowmik.out' has not changed.
@@ -1121,13 +1121,13 @@ LaTeX Font Warning: Size substitutions with differences
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 324.
  ) 
 Here is how much of TeX's memory you used:
- 17029 strings out of 493089
- 328970 string characters out of 6134842
+ 17028 strings out of 493089
+ 328922 string characters out of 6134842
  396715 words of memory out of 5000000
- 20030 multiletter control sequences out of 15000+600000
+ 20029 multiletter control sequences out of 15000+600000
  21595 words of font info for 78 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 56i,16n,57p,467b,756s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 56i,16n,57p,465b,756s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb
 ></usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb>
 </usr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb><
@@ -1136,8 +1136,8 @@ sr/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr
 /local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></us
 r/local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb></usr
 /local/texlive/2015/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on /Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/s
-lides/gis_app_2016_Bhowmik.pdf (25 pages, 2051246 bytes).
+Output written on /Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/sli
+des/gis_app_2016_Bhowmik.pdf (25 pages, 2051171 bytes).
 PDF statistics:
  755 PDF objects out of 1000 (max. 8388607)
  682 compressed objects within 7 object streams

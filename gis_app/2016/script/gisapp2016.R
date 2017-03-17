@@ -8,9 +8,14 @@
 ##########################################################################################
 ##########################################################################################
 
+##########################################################################################
+##										Day 1			 								##
+##									March 29, 2016										##
+##########################################################################################
+
 ## Set the working directory
 
-setwd("/Users/avitbhowmik/Teaching/teaching_materials/gis_app/2016/data")
+setwd("/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/data")
 
 
 ## Read and visualize "Shapefiles" - spatial objects
@@ -32,15 +37,20 @@ summary(bd.boundary)
 proj4string(bd.boundary) <-
 CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
-plot(bd.boundary)
-
 ## Access coordinates and data
 
 bd.boundary@bbox
 
 bd.boundary@data
 
-bd.boundary@data$NAME_OBSOL
+bd.boundary@data$UNREG1
+
+
+# Plot shapefile
+
+plot(bd.boundary)
+
+spplot(bd.boundary["UNREG1"])
 
 
 ## Point spatial data from comma-separated (or text) values. Visualizing on polygons.
@@ -61,9 +71,7 @@ tail(bd.trace.metal)
 
 ######################################################
 
-## Convert into SpatialPointsDataFrame
-
-bd.trace.metal <- bd.trace.metal[,c(1:2,11)]
+## Convert into SpatialPointsDataFrame and visualize them
 
 coordinates(bd.trace.metal) <- ~LONG_DEG+LAT_DEG
 proj4string(bd.trace.metal) <-
@@ -71,14 +79,20 @@ CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
 class(bd.trace.metal)
 
-bd.trace.metal@coords
+head(bd.trace.metal@coords)
+
+head(bd.trace.metal@data)
 
 spplot(bd.trace.metal, xlim=c(87.9, 92.9), ylim=c(20.6, 26.8),
 	sp.layout=list("sp.polygons", bd.boundary, col="gray"),
 	col.regions=colorRampPalette(c("blue", "green", "yellow", "orange", "red"))(100),
 	scales=list(draw=T), colorkey=T)
 
-bd.trace.metal <- bd.trace.metal[!is.na(bd.trace.metal@data$Zn),]
+bd.trace.metal <- bd.trace.metal[!is.na(bd.trace.metal@data$Pb),]
+
+## Save it as a shape file
+
+writePointsShape(bd.trace.metal, "bd_trace_metal")
 
 
 # Spatial Grids, i.e. Rasters
@@ -87,298 +101,270 @@ library(raster)
 
 bd.elv <- raster("bd_elv.tif")
 
+bd.elv[Which(bd.elv<=0, cells=TRUE)] <- NA
+
+bd.elv.grid <- as(bd.elv, "SpatialGridDataFrame")
+
 class(bd.elv)
 
 plot(bd.elv)
 
-bd.elv.grid <- as(bd.elv, "SpatialGridDataFrame")
-
-class(bd.elv.grid)
-
-head(bd.elv.grid@data)
-
-spplot(bd.elv.grid)
-
 plot(bd.boundary, add=T)
 
-spplot(bd.elv, sp.layout=list("sp.polygons", bd.boundary),
+plot(bd.trace.metal, add=T, col="red")
+
+spplot(bd.elv.grid, sp.layout=list("sp.lines", as(bd.boundary, "SpatialLines")),
 	col.regions=topo.colors(100), scales=list(draw=T))
 
 
-bd.soc <- raster("bd_soc.tif")
-bd.soc.grid <- readAsciiGrid("bd_soc.asc")
-proj4string(bd.soc.grid) <-
-CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+################################################################
 
+## Exercise 2: Load the other rasters from the data directory ##
+## Explore them from the plot ##
+
+################################################################
+
+bd.soc <- raster("bd_soc.tif")
 bd.scc <- raster("bd_scc.tif")
 bd.ph <- raster("bd_ph.tif")
 bd.wc <- raster("bd_wc.tif")
 bd.pop.dens <- raster("bd_pop_dens.tif")
 
+## Extract values of the spatial predictors at the ground water sampling points
 
-class(bd.predictors)
-
-head(bd.predictors@data)
-
-spplot(bd.predictors)
-
-# Clipping the raster to our analysis extent.
-
-Landau_region_raster <- raster(Clipped_LandauGrid)
-
-writeRaster(Landau_region_raster, "Landau_region_raster", format="GTiff")
-
-###################################################################################################
-
-# Exercise 1: Read and Visualize the output spatial objects from the last two days.
-
-###################################################################################################
-
-
-
-
-
-# Create a wide table and store installed power in individual year column for each building
-
-library(reshape)
-
-inst_pow_wt <- as.data.frame(cast(inst_pow_st, X+Y~inst_year, fun.aggregate=mean, value="inst_power"))
-
-head(inst_pow_wt)
-
-inst_pow_wt[, c("1992", as.character(1994:1997),"1999")] <- NaN
-
-inst_pow_wt <- inst_pow_wt[,c("X", "Y", as.character(1991:2013))]
-
-sp <- SpatialPoints(inst_pow_wt[,1:2], proj4string=CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs"))
-
-library(xts)
-
-time <- as.xts(ts(data=1:23,start=1991,end=2013,frequency=1))
-
-data <- as.data.frame(melt(inst_pow_wt[,as.character(1991:2013)])$value)
-
-names(data) <- "Installed_power_Landau"
-
-inst_pow_stfdf <- STFDF(sp, time, data)
-
-str(inst_pow_stfdf)
-
-stplot(inst_pow_stfdf, 1991:2013, col.regions=bpy.colors(1000,), sp.layout=list("sp.lines", Landau.region.boundary, col="gray"), xlab="Longitudes", ylab="Latitudes", scales=list(draw=T), layout=c(6,4))
-
-
-## Spatial data
-
-coordinates(GISAppData) = ~X + Y
-
-proj4string(GISAppData)  <- CRS("+proj=utm +zone=32 +ellps=GRS80 +units=m +no_defs")
-
-plot(GISAppData)
-
-head(GISAppData@coords)
-
-head(GISAppData@data)
-
-spplot(GISAppData["rad_mean"], sp.layout=list("sp.polygons", Landau.region), col.regions=bpy.colors(), colorkey=TRUE)
-
-# Write shape files
-
-writePointsShape(GISAppData, "GISAppData")
-
-#########################################################################################################################
-
-# Exercise 3: Plot the other attributes of GISAppData using "spplot" and
-# check (visually) if there is a spatial structure.
-
-#########################################################################################################################
-
-# Area of our region
-
-GISAppData <- readShapePoints("GISAppData")
-
-library(rgeos)
-
-gArea(Landau.region)/1000000
-
-# Distance between roof tops
-
-dist_bet_rt <- spDists(GISAppData@coords, longlat=TRUE)
-
-max(dist_bet_rt)
-
-min(dist_bet_rt[which(dist_bet_rt!=0)])
-
-##########################################################################################################################
-
-# Exercise 4: Explore R objects and rgeos package
-# What are the location of the buildings (street names) with the highest and lowest mean radiation?
-# Plot them on a map of Landau region.
-# Calculate the geographic distance between them.
-
-##########################################################################################################################
-
-# Solve 4
-
-GISAppData@data[which(GISAppData@data$rad_mean==max(GISAppData@data$rad_mean)),"adress"]
-
-GISAppData@data[which(GISAppData@data$rad_mean==min(GISAppData@data$rad_mean)),"adress"]
-
-plot(Landau.region)
-
-plot(GISAppData[which(GISAppData$rad_mean==max(GISAppData$rad_mean)),], add=T, col="red")
-
-plot(GISAppData[which(GISAppData$rad_mean==min(GISAppData$rad_mean)),], add=T, col="red")
-
-gDistance(GISAppData[which(GISAppData@data$adress=="Schmiedstrae 5"),], GISAppData[which(GISAppData@data$adress=="Breslauer Strae 5a"),])
-
-
-
-
-
-#############################################################################################################
-
-#Exercise 5: How are the mean radiations and building ages across k-means clusters? 
-
-#############################################################################################################
-
-## Geostatistics
-
-
+plot(bd.scc)
 
 bd.trace.metal@data$elv <- extract(bd.elv, bd.trace.metal)
 bd.trace.metal@data$soc <- extract(bd.soc, bd.trace.metal)
+
+head(bd.trace.metal@data)
+
+#############################################################
+
+## Exercise 3: Extract values of SCC, pH, WC and POP_DENS ##
+
+#############################################################
+
 bd.trace.metal@data$scc <- extract(bd.scc, bd.trace.metal)
 bd.trace.metal@data$ph <- extract(bd.ph, bd.trace.metal)
 bd.trace.metal@data$wc <- extract(bd.wc, bd.trace.metal)
 bd.trace.metal@data$popdens <- extract(bd.pop.dens, bd.trace.metal)
 
+## Remove NA values from data
+
 bd.trace.metal <- bd.trace.metal[!is.na(bd.trace.metal@data$soc),]
+bd.trace.metal <- bd.trace.metal[!is.na(bd.trace.metal@data$popdens),]
 
-# Spatial structure
+## Remove duplicated from data
 
-summary(lm(bd.trace.metal@data$Pb~bd.trace.metal@coords[,1]+bd.trace.metal@coords[,2]))
+zerodist(bd.trace.metal, zero=0.008333333)
+bd.trace.metal <- remove.duplicates(bd.trace.metal)
 
-summary(lm(Pb~elv, data=bd.trace.metal@data))
+writePointsShape(bd.trace.metal, "bd_trace_metal")
 
-###########################################################################################################
 
-# Exercise 6: Tell me the status of the spatial structure in peak yield.
+##########################################################################################
+##										Day 2			 								##
+##									March 30, 2016										##
+##########################################################################################
 
-###########################################################################################################
+## Read the shapefile with lead concentration and predictor values
+
+library(maptools)
+
+setwd("/Users/avitbhowmik/Teaching/teaching_materials/gisapp2016/data")
+
+bd.trace.metal <- readShapePoints("bd_trace_metal")
+
+head(bd.trace.metal@data)
+
+# Distance between sampling points
+
+dis.pts <- spDists(bd.trace.metal@coords, longlat=TRUE)
+
+max(dis.pts)
+
+min(dis.pts[which(dis.pts!=0)])
+
+##################################################################
+
+# Exercise 4: Explore R objects and rgeos package
+# What are the location (coordinates) of the
+# sampling points with the highest and lowest Pb concentration?
+# Plot them on a map of Bangladesh.
+# Calculate the geographic distance between them.
+
+##################################################################
+
+# Solve 4
+
+bd.trace.metal@coords[which(bd.trace.metal@data$Pb==max(bd.trace.metal@data$Pb)),]
+
+bd.trace.metal@coords[which(bd.trace.metal@data$Pb==min(bd.trace.metal@data$Pb)),]
+
+bd.boundary <- readShapePoly("bd_boundary")
+
+plot(bd.boundary)
+
+plot(bd.trace.metal[which(bd.trace.metal@data$Pb==max(bd.trace.metal@data$Pb)),], add=T, col="red")
+
+plot(bd.trace.metal[which(bd.trace.metal@data$Pb==min(bd.trace.metal@data$Pb)),], add=T, col="red")
+
+library(rgeos)
+
+gDistance(bd.trace.metal[which(bd.trace.metal@data$Pb==max(bd.trace.metal@data$Pb)),],
+bd.trace.metal[which(bd.trace.metal@data$Pb==min(bd.trace.metal@data$Pb)),])
+
+## Check for Skewness
+
+library(moments)
+
+skewness(bd.trace.metal@data$Pb)
+
+## High positive skewness, hence we will log transform the data before
+## any statistical analysis
+
+# Spatial trend in the data, stationarity
+
+summary(lm(log(bd.trace.metal@data$Pb)~bd.trace.metal@coords[,1]+bd.trace.metal@coords[,2]))
+
+summary(lm(log(Pb)~elv+soc+scc+ph+wc+popdens, data=bd.trace.metal@data))
+
+#################################################################################
+## Fitting variogram
+#################################################################################
 
 ## Variogram modelling
 
 library(gstat)
 
-# For slope 
+## Without predictors
 
-var.Zn <- variogram(log(Zn)~1, bd.trace.metal)
+var.Pb <- variogram(log(Pb)~1, bd.trace.metal)
 
-var.Pb <- variogram(Pb~elv+soc+scc+ph+wc+popdens, bd.trace.metal, cutoff=550)
+plot(var.Pb)
 
-plot(var.Zn)
+## With spatial predictors
+
+var.Pb <- variogram(log(Pb)~elv+soc+scc+ph+wc+popdens+LONG_DEG+LAT_DEG,
+	bd.trace.metal, cutoff=700)
+
+plot(var.Pb)
 
 ## Explore variogram models
+
 vgm()
 
-# Exponential model
+## Fit an exponential model
 
-vmod.Zn.exp <- vgm(psill=0.8, model="Exp", range=250, nugget=0.4)
+vmod.Pb.exp <- fit.variogram(object=var.Pb, model=vgm(psill=0.4, model="Exp",
+	range=150, nugget=0.3), fit.sills=TRUE, fit.ranges=TRUE, fit.method=7)
+	
+plot(var.Pb, vmod.Pb.exp)
 
-vmod.Pb.exp <- fit.variogram(object=var.Pb, model=vgm(psill=1, model="Exp", range=400,
-	nugget=0.4), fit.sills=TRUE, fit.ranges=TRUE, fit.method=7)
+attr(vmod.Pb.exp, "SSErr")
 
-plot(var.Zn, vmod.Zn.exp)
+## Fit a power model
 
-# Spherical model
-
-vmod.Pb.sph <- fit.variogram(object=var.Pb, model=vgm(psill=3, model="Sph", range=400,
-	nugget=0.5), fit.sills=TRUE, fit.ranges=TRUE, fit.method=7)
-
-plot(var.Pb, vmod.Pb.sph)
-
-vmod.Pb.gau <- fit.variogram(object=var.Pb, model=vgm(psill=1, model="Gau", range=400,
-	nugget=0.5), fit.sills=TRUE, fit.ranges=TRUE, fit.method=7)
-
-plot(var.Pb, vmod.Pb.gau)
-
-vmod.Pb.pow <- fit.variogram(object=var.Pb, model=vgm(psill=1, model="Pow", range=1,
-	nugget=0.5), fit.sills=TRUE, fit.ranges=TRUE, fit.method=6)
+vmod.Pb.pow <- fit.variogram(object=var.Pb, model=vgm(psill=0.4, model="Pow", range=1.5,
+	nugget=0.4), fit.sills=TRUE, fit.ranges=TRUE, fit.method=6)
 
 plot(var.Pb, vmod.Pb.pow)
 
-# Evaluate two fitted models by their goodness of fit (Sum of Squared Error)
-attr(vmod.Pb.exp, "SSErr")
-attr(vmod.Pb.sph, "SSErr")
-attr(vmod.Pb.gau, "SSErr")
 attr(vmod.Pb.pow, "SSErr")
 
+
+##################################################################
+
+# Exercise 5: Fit a spherical model and check the error statistics
+
+##################################################################
+
+# Spherical model
+
+vmod.Pb.sph <- fit.variogram(object=var.Pb, model=vgm(psill=0.4, model="Sph", range=4,
+	nugget=0.4), fit.sills=TRUE, fit.ranges=TRUE, fit.method=7)
+
+plot(var.Pb, vmod.Pb.sph)
+
+attr(vmod.Pb.sph, "SSErr")
+
 ###########################################################################################################
 
-# Exercise 7: Fit a variogram for the aspect.
+# Spatial interpolation: Kriging
 
 ###########################################################################################################
 
-## Spatial interpolation: Kriging
+## Prepare prediction grid
 
-bd.elv.pts <- rasterToPoints(bd.elv)
-bd.soc.pts <- rasterToPoints(bd.soc)
-bd.scc.pts <- rasterToPoints(bd.scc)
-bd.ph.pts <- rasterToPoints(bd.ph)
-bd.wc.pts <- rasterToPoints(bd.wc)
-bd.pop.dens.pts <- rasterToPoints(bd.pop.dens)
+library(raster)
 
-bd.elv.soc <- merge(bd.elv.pts, bd.soc.pts, by=c("x", "y"))
-bd.elv.soc.scc <- merge(bd.elv.soc, bd.scc.pts, by=c("x", "y"))
-bd.elv.soc.scc.ph <- merge(bd.elv.soc.scc, bd.ph.pts, by=c("x", "y"))
-bd.elv.soc.scc.ph.wc <- merge(bd.elv.soc.scc.ph, bd.wc.pts, by=c("x", "y"))
-bd.elv.soc.scc.ph.popdens <- merge(bd.elv.soc.scc.ph.wc, bd.pop.dens.pts, by=c("x", "y"))
+bd.elv.grid <- as(raster("bd_elv.tif"), "SpatialGridDataFrame")
+bd.soc.grid <- as(raster("bd_soc.tif"), "SpatialGridDataFrame")
+bd.scc.grid <- as(raster("bd_scc.tif"), "SpatialGridDataFrame")
+bd.ph.grid <- as(raster("bd_ph.tif"), "SpatialGridDataFrame")
+bd.wc.grid <- as(raster("bd_wc.tif"), "SpatialGridDataFrame")
+bd.pop.dens.grid <- as(raster("bd_pop_dens.tif"), "SpatialGridDataFrame")
 
-predictors <- bd.elv.soc.scc.ph.popdens
-colnames(predictors) <- c("x", "y", "elv", "soc", "scc", "ph", "wc", "popdens")
+bd.predictors.grid <- bd.elv.grid
 
-coordinates(predictors) <- ~x+y
+bd.predictors.grid@data <- data.frame(bd.predictors.grid@data, bd.soc.grid@data,
+	bd.scc.grid@data, bd.ph.grid@data, bd.wc.grid@data, bd.pop.dens.grid@data,
+	coordinates(bd.predictors.grid))
+	
+head(bd.predictors.grid@data)
 
-proj4string(predictors) <-
-CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+colnames(bd.trace.metal@data)
 
-gridded(predictors) = TRUE
+colnames(bd.predictors.grid@data) <- c("elv", "soc", "scc", "ph", "wc", "popdens",
+	"LONG_DEG", "LAT_DEG")
 
-class(predictors)
+spplot(bd.predictors.grid[2:5])
 
-spplot(predictors["soc"])
+## Adjusting projection systems and removing duplicates
 
-krg_Zn <- krige(log(Zn)~1, bd.trace.metal, newdata=bd.soc.grid,
-	model=vmod.Zn.exp)
+proj4string(bd.trace.metal) <- proj4string(bd.predictors.grid)
 
-krg_Pb <- krige(Pb~elv+soc+scc+ph+wc+popdens, bd.trace.metal, newdata=predictors,
-	model=vmod.Pb.exp)
+plot(bd.trace.metal)
 
-Landau.region.boundary <- as(Landau.region, "SpatialLines")
+
+## Weighted least square prediction
+
+krg_wls <- krige(log(Pb)~elv+soc+scc+ph+wc+popdens+LONG_DEG+LAT_DEG,
+bd.trace.metal, newdata=bd.predictors.grid)
+
+krg_wls@data$var1.pred <- exp(krg_wls@data$var1.pred)
+
+spplot(krg_wls["var1.pred"], col.regions=colorRampPalette(c("blue", "green", "yellow",
+	"orange", "red"))(1000), sp.layout=list("sp.polygons", bd.boundary),
+	colorkey=T, xlab="Logitude", ylab="Latitude", scales=list(draw=T))
+
+## Universal Kriging or Kriging with external drift
+
+krg_Pb <- krige(log(Pb)~elv+soc+scc+ph+wc+popdens+LONG_DEG+LAT_DEG,
+bd.trace.metal, newdata=bd.predictors.grid, model=vmod.Pb.exp)
+
+krg_Pb@data$var1.pred <- exp(krg_Pb@data$var1.pred)
 
 spplot(krg_Pb["var1.pred"], col.regions=colorRampPalette(c("blue", "green", "yellow",
 	"orange", "red"))(1000), sp.layout=list("sp.polygons", bd.boundary),
 	colorkey=T, xlab="Logitude", ylab="Latitude", scales=list(draw=T))
 
+## Calculate the hazard quotient (HQ) values by comparing to
+## the thresholds for drinking water, and acute and chronic risk
 
-?writePolyShape
+krg_Pb@data$hq_drink <- krg_Pb@data$var1.pred/10
+krg_Pb@data$hq_ecoacute <- krg_Pb@data$var1.pred/65
+krg_Pb@data$hq_ecochron <- krg_Pb@data$var1.pred/2.5
+	
+spplot(krg_Pb[3:5], col.regions=colorRampPalette(c("blue", "green", "yellow",
+	"orange", "red"))(1000), sp.layout=list("sp.polygons", bd.boundary),
+	colorkey=T, xlab="Logitude", ylab="Latitude", scales=list(draw=T))
 
-?writeAsciiGrid
 
-?writeRaster
+################################# End #######################################
+#############################################################################
+#############################################################################
 
-writeAsciiGrid (lm.Production2010.Surface, "Production2010.asc")
 
-Production.2010<-readAsciiGrid("Production2010.asc" )
 
-spplot(Production.2010, col.regions=bpy.colors())
-
-Production_2010<-raster(Production.2010)
-
-writeRaster(Production_2010, filename="Production_2010", format="GTiff")
-
-m<-raster("Production_2010.tif")
-
-plot(m)
-
-################################# End ###################################################################
